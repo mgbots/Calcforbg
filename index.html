@@ -3,35 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Calculator</title>
+    <title>Variable Calculator</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: #f0f0f0;
+            background-color: #121212;
+            color: #e0e0e0;
         }
         .calculator {
             display: grid;
-            grid-template-rows: auto repeat(5, 1fr);
-            gap: 10px;
-            max-width: 300px;
-            background: white;
+            grid-template-rows: auto repeat(6, 1fr);
+            gap: 15px;
+            max-width: 350px;
+            background: #1e1e1e;
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
         }
         .display {
             grid-row: 1;
             background: #333;
-            color: white;
-            padding: 20px;
-            border-radius: 5px;
+            color: #ffffff;
+            padding: 15px;
+            border-radius: 8px;
             text-align: right;
-            font-size: 1.5em;
+            font-size: 1.8em;
         }
         .buttons {
             display: grid;
@@ -39,46 +40,68 @@
             gap: 10px;
         }
         .button {
-            background: #f4f4f4;
+            background: #282828;
             border: none;
-            padding: 20px;
-            border-radius: 5px;
-            font-size: 1.2em;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 1.4em;
+            color: #e0e0e0;
             cursor: pointer;
             transition: background 0.3s;
         }
         .button:hover {
-            background: #ddd;
+            background: #3a3a3a;
         }
         .button.operator {
-            background: #fe9241;
+            background: #ff5722;
             color: white;
         }
         .button.operator:hover {
-            background: #e67e22;
+            background: #e64a19;
         }
         .button.variable {
-            background: #1abc9c;
+            background: #009688;
             color: white;
         }
         .button.variable:hover {
-            background: #16a085;
+            background: #00796b;
+        }
+        .button.custom-var {
+            grid-column: span 4;
+            background: #673ab7;
+            color: white;
+        }
+        .button.custom-var:hover {
+            background: #5e35b1;
         }
         .button.equals {
             grid-column: span 4;
-            background: #2ecc71;
+            background: #4caf50;
             color: white;
         }
         .button.equals:hover {
-            background: #27ae60;
+            background: #388e3c;
+        }
+        .input-box {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            background-color: #333;
+            color: #fff;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+        }
+        .input-box::placeholder {
+            color: #bbb;
         }
     </style>
 </head>
 <body>
     <div class="calculator">
         <div id="display" class="display">0</div>
+        <input id="customVarInput" class="input-box" type="text" placeholder="Enter custom variable">
         <div class="buttons">
-            <!-- Numeric Buttons -->
             <button class="button" onclick="appendNumber('1')">1</button>
             <button class="button" onclick="appendNumber('2')">2</button>
             <button class="button" onclick="appendNumber('3')">3</button>
@@ -92,9 +115,9 @@
             <button class="button" onclick="appendNumber('9')">9</button>
             <button class="button operator" onclick="appendOperator('*')">*</button>
             <button class="button" onclick="appendNumber('0')">0</button>
-            <button class="button" onclick="appendVariable()">Var</button>
+            <button class="button variable" onclick="appendVariable('{user count}')">User Count</button>
             <button class="button operator" onclick="appendOperator('/')">/</button>
-            <button class="button equals" onclick="calculate()">=</button>
+            <button class="button equals" onclick="finalizeEquation()">Create Variable</button>
         </div>
     </div>
 
@@ -112,20 +135,26 @@
             display.textContent = equation;
         }
 
-        function appendVariable() {
-            equation += '{user count}';
+        function appendVariable(variable) {
+            equation += variable;
             display.textContent = equation;
         }
 
-        function calculate() {
-            try {
-                let result = eval(equation); // Unsafe; replace with a safer parser in production
-                display.textContent = result;
-                equation = result;
-            } catch (e) {
-                display.textContent = 'Error';
-            }
+        function finalizeEquation() {
+            // Instead of calculating, we'll prepare the equation for future use
+            alert(`Variable Created: {solve_equation[${equation}]}`);
+            equation = '';  // Clear equation after creation
+            display.textContent = '0';
         }
+
+        // Function to append custom variables
+        document.getElementById('customVarInput').addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                let customVariable = `{${event.target.value}}`;
+                appendVariable(customVariable);
+                event.target.value = ''; // Clear input
+            }
+        });
     </script>
 </body>
 </html>
