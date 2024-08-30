@@ -17,7 +17,7 @@
         }
         .calculator {
             display: grid;
-            grid-template-rows: auto repeat(6, 1fr);
+            grid-template-rows: auto repeat(7, 1fr);
             gap: 15px;
             max-width: 350px;
             background: #1e1e1e;
@@ -33,6 +33,18 @@
             border-radius: 8px;
             text-align: right;
             font-size: 1.8em;
+        }
+        .current-equation {
+            grid-row: 2;
+            background: #444;
+            color: #aaaaaa;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: left;
+            font-size: 1em;
+            height: 40px;
+            overflow-x: auto;
+            white-space: nowrap;
         }
         .buttons {
             display: grid;
@@ -59,12 +71,27 @@
         .button.operator:hover {
             background: #e64a19;
         }
+        .button.clear {
+            background: #f44336;
+            color: white;
+        }
+        .button.clear:hover {
+            background: #d32f2f;
+        }
         .button.variable {
             background: #009688;
             color: white;
         }
         .button.variable:hover {
             background: #00796b;
+        }
+        .button.create-var {
+            grid-column: span 4;
+            background: #4caf50;
+            color: white;
+        }
+        .button.create-var:hover {
+            background: #388e3c;
         }
         .button.custom-var {
             grid-column: span 4;
@@ -74,33 +101,12 @@
         .button.custom-var:hover {
             background: #5e35b1;
         }
-        .button.equals {
-            grid-column: span 4;
-            background: #4caf50;
-            color: white;
-        }
-        .button.equals:hover {
-            background: #388e3c;
-        }
-        .input-box {
-            width: 100%;
-            padding: 10px;
-            border: none;
-            border-radius: 8px;
-            background-color: #333;
-            color: #fff;
-            font-size: 1.2em;
-            margin-bottom: 15px;
-        }
-        .input-box::placeholder {
-            color: #bbb;
-        }
     </style>
 </head>
 <body>
     <div class="calculator">
         <div id="display" class="display">0</div>
-        <input id="customVarInput" class="input-box" type="text" placeholder="Enter custom variable">
+        <div id="currentEquation" class="current-equation">Equation: </div>
         <div class="buttons">
             <button class="button" onclick="appendNumber('1')">1</button>
             <button class="button" onclick="appendNumber('2')">2</button>
@@ -115,46 +121,61 @@
             <button class="button" onclick="appendNumber('9')">9</button>
             <button class="button operator" onclick="appendOperator('*')">*</button>
             <button class="button" onclick="appendNumber('0')">0</button>
-            <button class="button variable" onclick="appendVariable('{user count}')">User Count</button>
+            <button class="button clear" onclick="clearEquation()">Clear</button>
             <button class="button operator" onclick="appendOperator('/')">/</button>
-            <button class="button equals" onclick="finalizeEquation()">Create Variable</button>
+            <button class="button variable" onclick="promptForVariable()">Add Variable</button>
+            <button class="button create-var" onclick="finalizeEquation()">Create Variable</button>
         </div>
     </div>
 
     <script>
         let display = document.getElementById('display');
+        let currentEquation = document.getElementById('currentEquation');
         let equation = '';
 
         function appendNumber(number) {
             equation += number;
-            display.textContent = equation;
+            updateDisplay();
         }
 
         function appendOperator(operator) {
             equation += ' ' + operator + ' ';
-            display.textContent = equation;
+            updateDisplay();
+        }
+
+        function promptForVariable() {
+            let variableName = prompt('Enter variable name:');
+            if (variableName) {
+                appendVariable(`{${variableName}}`);
+            }
         }
 
         function appendVariable(variable) {
             equation += variable;
-            display.textContent = equation;
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            display.textContent = equation || '0';
+            currentEquation.textContent = `Equation: ${equation}`;
+        }
+
+        function clearEquation() {
+            equation = '';
+            updateDisplay();
         }
 
         function finalizeEquation() {
-            // Instead of calculating, we'll prepare the equation for future use
-            alert(`Variable Created: {solve_equation[${equation}]}`);
-            equation = '';  // Clear equation after creation
-            display.textContent = '0';
+            if (equation) {
+                alert(`Variable Created: {solve_equation[${equation}]}`);
+                clearEquation();
+            } else {
+                alert('No equation to create a variable from.');
+            }
         }
 
-        // Function to append custom variables
-        document.getElementById('customVarInput').addEventListener('keydown', function(event) {
-            if (event.key === 'Enter') {
-                let customVariable = `{${event.target.value}}`;
-                appendVariable(customVariable);
-                event.target.value = ''; // Clear input
-            }
-        });
+        // Initial display update
+        updateDisplay();
     </script>
 </body>
 </html>
